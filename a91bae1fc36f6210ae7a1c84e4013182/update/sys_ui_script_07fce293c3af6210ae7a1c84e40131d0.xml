@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_script">
+    <sys_ui_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <description/>
+        <global>false</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
+        <name>x_37790_appxconnec.servicenow_adapter</name>
+        <script><![CDATA[var x_37790_appxconnec = x_37790_appxconnec || {};
+
+x_37790_appxconnec.servicenow_adapter = (function () {
+	"use strict";
+
+	function createInteractionAjaxCall(callerInfoArr, interactionId) {
+		return function (response) {
+			var xmltempresult = response.responseXML.getElementsByTagName("result");
+			var messagetempres = xmltempresult[0].getAttribute("data");
+			var result = JSON.parse(messagetempres);
+			result.call_rel_info = callerInfoArr;
+			result.interactionId = interactionId;
+			document.getElementById("appxcti").contentWindow.postMessage(
+				{
+					result: result,
+				},
+				"*"
+			);
+		};
+	}
+
+	return {
+		searchEnt: function (requestData) {
+			var queryData = {
+				command: requestData.command,
+				jobuuid: requestData.jobuuid,
+				data: {
+					interactionId: requestData.data.interactionId,
+					entList: requestData.data.snData,
+				},
+			};
+			console.log(queryData);
+			var ga = new GlideAjax("AppxGlideData");
+			ga.addParam("sysparm_name", "getData");
+			ga.addParam("sysparm_querydata", JSON.stringify(queryData));
+			ga.getXMLAnswer(function (response) {
+				console.log(response);
+				var res = JSON.parse(response);
+
+				document.getElementById("appxcti").contentWindow.postMessage(res, "*");
+			});
+		},
+		createEntity: function (requestData) {},
+		createInteraction: function (requestData) {
+			var ga = new GlideAjax("SNAppxInteractionData");
+			ga.addParam("sysparm_name", "createInteraction");
+			ga.addParam("sysparm_ctdata", JSON.stringify(requestData));
+			ga.getXMLAnswer(function (response) {
+				var res = JSON.parse(response);
+
+				document.getElementById("appxcti").contentWindow.postMessage(res, "*");
+			});
+		},
+		updateInteraction: function (requestData) {
+			var ga = new GlideAjax("SNAppxInteractionData");
+			ga.addParam("sysparm_name", "updateInteraction");
+			ga.addParam("sysparm_ctdata", JSON.stringify(requestData));
+			ga.getXMLAnswer(function (response) {
+				console.log(response);
+				var res = JSON.parse(response);
+				document.getElementById("appxcti").contentWindow.postMessage(res, "*");
+				return;
+			});
+		},
+		type: "servicenow_adapter",
+	};
+})();
+]]></script>
+        <script_name>servicenow_adapter</script_name>
+        <sys_class_name>sys_ui_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-08-29 11:30:00</sys_created_on>
+        <sys_id>07fce293c3af6210ae7a1c84e40131d0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_37790_appxconnec.servicenow_adapter</sys_name>
+        <sys_package display_value="AppxConnectCTI" source="x_37790_appxconnec">a91bae1fc36f6210ae7a1c84e4013182</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AppxConnectCTI">a91bae1fc36f6210ae7a1c84e4013182</sys_scope>
+        <sys_update_name>sys_ui_script_07fce293c3af6210ae7a1c84e40131d0</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-08-29 11:30:00</sys_updated_on>
+        <ui_type>0</ui_type>
+        <use_scoped_format>true</use_scoped_format>
+    </sys_ui_script>
+</record_update>

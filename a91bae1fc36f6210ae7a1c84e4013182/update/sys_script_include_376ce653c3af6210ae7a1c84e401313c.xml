@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_37790_appxconnec.AppxGlideData</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description/>
+        <mobile_callable>false</mobile_callable>
+        <name>AppxGlideData</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var AppxGlideData = Class.create();
+AppxGlideData.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+	getData: function () {
+		var requestData = JSON.parse(this.getParameter("sysparm_querydata"));
+		var entData = [];
+		var peDataIndex = 0;
+		for (
+			peDataIndex = 0;
+			peDataIndex < requestData.data.entList.length;
+			peDataIndex++
+		) {
+			var tempSNEntData = requestData.data.entList[peDataIndex];
+			var gr = new GlideRecordSecure(tempSNEntData.peName);
+			gr.addEncodedQuery(tempSNEntData.peEnQuery);
+			gr.query();
+			i = 0;
+
+			while (gr.next()) {
+				var tempEntData = {
+					id: gr.getValue(tempSNEntData.peUUIDParam),
+					name: gr.getValue(tempSNEntData.peDisplayNameParam),
+					entName: tempSNEntData.peName,
+					peID: "",
+					childEnts: [],
+				};
+				entData.push(tempEntData);
+				if (
+					tempSNEntData.se != undefined &&
+					tempSNEntData.se != null &&
+					tempSNEntData.se.length > 0
+				) {
+					var seDataIndex = 0;
+					for (
+						seDataIndex = 0;
+						seDataIndex < tempSNEntData.se.length;
+						seDataIndex++
+					) {
+						var tempSNSEntData = tempSNEntData.se[seDataIndex];
+						var tempEncString = tempSNSEntData.seEnQuery;
+						var tempQueryStrings = tempEncString.split("#@#");
+						for (var j = 0; j < tempQueryStrings.length; j++) {
+							var tempQuerySubStr = tempQueryStrings[j];
+							if (tempQuerySubStr.startsWith("PEP")) {
+								var tempQuerySubStrPEPS = tempQuerySubStr.split("#:#");
+								if (tempQuerySubStrPEPS.length > 0) {
+									tempEncString = tempEncString.replace(
+										"#@#" + tempQuerySubStr + "#@#",
+										gr.getValue(tempQuerySubStrPEPS[1])
+									);
+								}
+							}
+						}
+						var grse = new GlideRecordSecure(tempSNSEntData.seName);
+						grse.addEncodedQuery(tempEncString);
+						grse.query();
+						while (grse.next()) {
+							var tempSEEntData = {
+								id: grse.getValue(tempSNSEntData.seUUIDParam),
+								name: grse.getValue(tempSNSEntData.seDisplayNameParam),
+								entName: tempSNSEntData.seName,
+								peID: gr.getValue(tempSNEntData.peUUIDParam),
+								childEnts: [],
+							};
+							tempEntData.childEnts.push(tempSEEntData);
+						}
+					}
+				}
+			}
+		}
+		var resultjson = {};
+		resultjson.command = requestData.command;
+		if (requestData.jobuuid != undefined && requestData.jobuuid != "") {
+			resultjson.jobuuid = requestData.jobuuid;
+		}
+		resultjson.data = {
+			interactionId: requestData.data.interactionId,
+			success: true,
+			result: entData,
+		};
+		return JSON.stringify(resultjson);
+	},
+	type: "AppxGlideData",
+});
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-08-29 11:25:31</sys_created_on>
+        <sys_id>376ce653c3af6210ae7a1c84e401313c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>AppxGlideData</sys_name>
+        <sys_package display_value="AppxConnectCTI" source="x_37790_appxconnec">a91bae1fc36f6210ae7a1c84e4013182</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="AppxConnectCTI">a91bae1fc36f6210ae7a1c84e4013182</sys_scope>
+        <sys_update_name>sys_script_include_376ce653c3af6210ae7a1c84e401313c</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-08-29 11:25:31</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>376ce653c3af6210ae7a1c84e401313c</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-08-29 11:25:30</sys_created_on>
+        <sys_id>0fec66dfc36f6210ae7a1c84e40131f1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-08-29 11:25:30</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>

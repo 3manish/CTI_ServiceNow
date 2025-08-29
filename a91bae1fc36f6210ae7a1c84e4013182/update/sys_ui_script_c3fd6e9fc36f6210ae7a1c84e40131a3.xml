@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_script">
+    <sys_ui_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <description/>
+        <global>false</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
+        <name>x_37790_appxconnec.appxconnect_adapter</name>
+        <script><![CDATA[var x_37790_appxconnec = x_37790_appxconnec || {};
+
+x_37790_appxconnec.appxconnect_adapter = (function () {
+	"use strict";
+
+	var isLibLoaded = false;
+
+	function createInteraction(data) {
+		/*openFrameAPI.openServiceNowForm({'interaction_sys_id':data.result.interactionId});*/
+	}
+
+	function handleCommunicationEvent(context) {
+		document
+			.getElementById("appxcti")
+			.contentWindow.postMessage({ command: "CLICK2CALL", data: context }, "*");
+		openFrameAPI.show();
+	}
+
+	function initSuccess(snConfig) {
+		//register for communication event from TopFrame
+		openFrameAPI.subscribe(
+			openFrameAPI.EVENTS.COMMUNICATION_EVENT,
+			handleCommunicationEvent
+		);
+		isLibLoaded = true;
+		document.getElementById("appxcti").src =
+			"https://cti.appxconnect.com?ctiid=" + snConfig["configuration"];
+	}
+
+	function initFailure(error) {}
+
+	function isCRMLoaded(task) {
+		var tempTask = {
+			command: task.command,
+			jobuuid: task.jobuuid,
+			data: {
+				crmloaded: true,
+			},
+		};
+		document.getElementById("appxcti").contentWindow.postMessage(tempTask, "*");
+	}
+
+	return {
+		snOnLoad: function () {
+			window.addEventListener("message", function (event) {
+				if (event.data.command) {
+					var command = event.data.command;
+					if (command == "LOADLIB") {
+						isCRMLoaded(event.data);
+					} else if (command == "SEARCHENTITY") {
+						x_37790_appxconnec.servicenow_adapter.searchEnt(event.data);
+					} else if (command == "CREATEENTITY") {
+						if (event.data.data) {
+							if (event.data.data.snEntityName) {
+								if (event.data.data.snEntityName == "interaction") {
+									if (
+										event.data.data.snEntityDetails.interactionSysId == "" ||
+										event.data.data.snEntityDetails.interactionSysId == "-1"
+									) {
+										x_37790_appxconnec.servicenow_adapter.createInteraction(
+											event.data
+										);
+									} else {
+										x_37790_appxconnec.servicenow_adapter.updateInteraction(
+											event.data
+										);
+									}
+								}
+							}
+						}
+					} else if (command == "UPDATEENTITY") {
+						if (event.data.data) {
+							if (event.data.data.snEntityName) {
+								if (event.data.data.snEntityName == "interaction") {
+									if (
+										event.data.data.snEntityDetails.interactionSysId == "" ||
+										event.data.data.snEntityDetails.interactionSysId == "-1"
+									) {
+										x_37790_appxconnec.servicenow_adapter.createInteraction(
+											event.data
+										);
+									} else {
+										x_37790_appxconnec.servicenow_adapter.updateInteraction(
+											event.data
+										);
+									}
+								}
+							}
+						}
+					} else if (command == "OPENENTITY") {
+						openFrameAPI.openServiceNowForm(event.data.data.snData);
+					} else if (command == "OPENECFORM") {
+						openFrameAPI.openServiceNowForm(event.data.data.snData);
+					} else if (command == "OPENCTIWINDOW") {
+						openFrameAPI.show();
+					} else {
+						openFrameAPI.openServiceNowForm(event.data.data);
+					}
+				}
+			});
+			openFrameAPI.init({}, initSuccess, initFailure);
+		},
+		/* set your public API here. For example:
+        		incrementAndReturnPrivateVar: function() {
+        			return private_function();
+        		},
+        */
+		type: "appxconnect_adapter",
+	};
+})();
+]]></script>
+        <script_name>appxconnect_adapter</script_name>
+        <sys_class_name>sys_ui_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-08-29 11:31:33</sys_created_on>
+        <sys_id>c3fd6e9fc36f6210ae7a1c84e40131a3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_37790_appxconnec.appxconnect_adapter</sys_name>
+        <sys_package display_value="AppxConnectCTI" source="x_37790_appxconnec">a91bae1fc36f6210ae7a1c84e4013182</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="AppxConnectCTI">a91bae1fc36f6210ae7a1c84e4013182</sys_scope>
+        <sys_update_name>sys_ui_script_c3fd6e9fc36f6210ae7a1c84e40131a3</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-08-29 11:31:33</sys_updated_on>
+        <ui_type>0</ui_type>
+        <use_scoped_format>true</use_scoped_format>
+    </sys_ui_script>
+</record_update>
