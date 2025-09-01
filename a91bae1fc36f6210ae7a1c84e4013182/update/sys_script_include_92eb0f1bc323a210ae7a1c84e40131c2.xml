@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_37790_appxconnec.SNAppxInteractionData</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description/>
+        <mobile_callable>false</mobile_callable>
+        <name>SNAppxInteractionData</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var SNAppxInteractionData = Class.create();
+SNAppxInteractionData.prototype = Object.extendsObject(
+	global.AbstractAjaxProcessor,
+	{
+		createInteraction: function () {
+			var requestData = JSON.parse(this.getParameter("sysparm_ctdata"));
+			var ctiAjax = new global.CTIAjaxUtility();
+			var result = ctiAjax.ctiOpenFrameInteraction(
+				requestData.data.snEntityDetails
+			);
+			var tempResult = {
+				jobuuid: requestData.jobuuid,
+				command: requestData.command,
+				success: false,
+				result: {
+					result: false,
+				},
+			};
+			if (requestData.data) {
+				if (requestData.data.interactionId) {
+					tempResult["data"] = {
+						interactionId: requestData.data.interactionId,
+					};
+				}
+			}
+			if (result.status) {
+				if (result.status == "success") {
+					tempResult["data"]["success"] = true;
+					tempResult["data"]["entitydetails"] = {
+						entName: "interaction",
+						name: "interaction",
+						id: result.fields.interactionSysId,
+					};
+				}
+			}
+			return JSON.stringify(tempResult);
+		},
+		updateInteraction: function () {
+			var requestData = JSON.parse(this.getParameter("sysparm_ctdata"));
+			var ctiAjax = new global.CTIAjaxUtility();
+			var result = ctiAjax.ctiOpenFrameInteraction(
+				requestData.data.snEntityDetails
+			);
+			var tempResult = {
+				jobuuid: requestData.jobuuid,
+				command: requestData.command,
+				success: false,
+				result: {
+					result: false,
+				},
+			};
+			if (requestData.data) {
+				if (requestData.data.interactionId) {
+					tempResult["data"] = {
+						interactionId: requestData.data.interactionId,
+					};
+				}
+			}
+			if (result.status) {
+				if (result.status == "success") {
+					tempResult["data"]["success"] = true;
+				}
+			}
+			return JSON.stringify(tempResult);
+		},
+		type: "SNAppxInteractionData",
+	}
+);]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-08-29 13:42:06</sys_created_on>
+        <sys_id>92eb0f1bc323a210ae7a1c84e40131c2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>SNAppxInteractionData</sys_name>
+        <sys_package display_value="AppxConnectCTI" source="x_37790_appxconnec">a91bae1fc36f6210ae7a1c84e4013182</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="AppxConnectCTI">a91bae1fc36f6210ae7a1c84e4013182</sys_scope>
+        <sys_update_name>sys_script_include_92eb0f1bc323a210ae7a1c84e40131c2</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-08-29 13:42:06</sys_updated_on>
+    </sys_script_include>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>92eb0f1bc323a210ae7a1c84e40131c2</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-08-29 13:42:06</sys_created_on>
+        <sys_id>bf2c8f9bc323a210ae7a1c84e40131cb</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-08-29 13:42:06</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
